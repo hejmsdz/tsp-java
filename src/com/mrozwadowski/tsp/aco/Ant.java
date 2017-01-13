@@ -77,7 +77,7 @@ public class Ant {
     private City randomPick(List<CityProb> citiesProbs) {
         double x = rand.nextDouble();
         for (CityProb cityProb: citiesProbs) {
-            if (x < cityProb.prob) {
+            if (x <= cityProb.prob) {
                 return cityProb.city;
             } else {
                 x -= cityProb.prob;

@@ -11,12 +11,13 @@ import java.util.Random;
 
 public class AntColony implements Algorithm {
     // metaheuristic parameters
-    double alpha = 0.1; // pheromone importance
-    double beta = 2; // distance importance
-    double tau0 = 0.9; // initial pheromone amount
-    double rho = 0.1; // evaporation coefficient
-    int numAnts = 50;
-    int numIterations = 10;
+    double alpha = 1; // pheromone importance
+    double beta = 5; // distance importance
+    double tau0 = 1; // initial pheromone amount
+    double rho = 0.5; // evaporation coefficient
+    double Q = 500; // global update
+    int numAnts = 160;
+    int numIterations = 100;
 
     private Graph graph;
     private double phero[][];
@@ -92,6 +93,7 @@ public class AntColony implements Algorithm {
         Ant bestAnt = null;
 
         for (Ant ant: ants) {
+            double add = Q / ant.getRouteLength();
             City previous = null;
             for (City city : ant.getRoute()) {
                 if (previous == null) {
@@ -100,7 +102,7 @@ public class AntColony implements Algorithm {
                 }
 
                 double value = getPhero(previous, city);
-                value += 1 / ant.getRouteLength();
+                value += add;
                 setPhero(previous, city, value);
                 previous = city;
             }
