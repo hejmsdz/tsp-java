@@ -1,14 +1,37 @@
 package com.mrozwadowski.tsp;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Graph {
     private List<City> cities;
 
     Graph() {
         cities = new ArrayList<>();
+    }
+
+    public static Graph fromFile(File file) throws IOException {
+        Scanner scanner = new Scanner(file);
+        Graph graph = new Graph();
+
+        int numCities = scanner.nextInt();
+        if (numCities < 2) {
+            throw new IOException("Expected at least two points!");
+        }
+
+        while (scanner.hasNextInt()) {
+            int num = scanner.nextInt();
+            int x = scanner.nextInt();
+            int y = scanner.nextInt();
+
+            graph.addCity(new City(num, x, y));
+        }
+
+        return graph;
     }
 
     public int getNumCities() {

@@ -25,11 +25,7 @@ public class Main {
 
     void readCities() {
         while (scanner.hasNextInt()) {
-            int num = scanner.nextInt();
-            int x = scanner.nextInt();
-            int y = scanner.nextInt();
-
-            graph.addCity(new City(num, x, y));
+            graph.addCity(new City(scanner.nextInt(), scanner.nextInt(), scanner.nextInt()));
         }
     }
 

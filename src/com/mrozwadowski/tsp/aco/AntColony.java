@@ -1,6 +1,5 @@
 package com.mrozwadowski.tsp.aco;
 
-import com.mrozwadowski.tsp.Algorithm;
 import com.mrozwadowski.tsp.City;
 import com.mrozwadowski.tsp.Graph;
 import com.mrozwadowski.tsp.Solution;
@@ -9,18 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class AntColony implements Algorithm {
+public class AntColony {
     // metaheuristic parameters
     double alpha = 1; // pheromone importance
     double beta = 5; // distance importance
     double tau0 = 1; // initial pheromone amount
     double rho = 0.5; // evaporation coefficient
     double Q = 500; // global update
-    int numAnts = 160;
+    double antsRatio = 0.8;
     int numIterations = 100;
 
     private Graph graph;
     private double phero[][];
+
+    private ProgressListener listener = null;
 
     public AntColony(Graph graph) {
         this.graph = graph;
@@ -32,6 +33,20 @@ public class AntColony implements Algorithm {
                 setPhero(i, j, tau0);
             }
         }
+    }
+
+    public void setParams(double alpha, double beta, double tau0, double rho, double Q, double antsRatio, int numIterations) {
+        this.alpha = alpha;
+        this.beta = beta;
+        this.tau0 = tau0;
+        this.rho = rho;
+        this.Q = Q;
+        this.antsRatio = antsRatio;
+        this.numIterations = numIterations;
+    }
+
+    public void setListener(ProgressListener listener) {
+        this.listener = listener;
     }
 
     public Graph getGraph() {
@@ -126,10 +141,9 @@ public class AntColony implements Algorithm {
         Ant best = null;
 
         for (int k = 1; k <= numIterations; k++) {
-            System.out.println("Iteration "+k);
-
             // generate ants
             ants = new ArrayList<>();
+            int numAnts = (int)(antsRatio * getNumCities());
             for (int i = 0; i < numAnts; i++) {
                 City starting = graph.randomCity(rand);
                 ants.add(new Ant(this, starting));
@@ -137,10 +151,10 @@ public class AntColony implements Algorithm {
 
             // every ant builds a partial solution
             for (int i = 0; i < getNumCities(); i++) {
-                if (i % 100 == 0) {
+                if (i % 10 == 0) {
                     // display this information every 100 steps,
                     // because too much output would be a mess
-                    System.out.println("Step "+i);
+                    if (listener != null) listener.iterationProgress(i, getNumCities());
                 }
 
                 evaporate();
@@ -150,7 +164,8 @@ public class AntColony implements Algorithm {
             }
 
             Ant iterationBest = globalUpdate(ants);
-            System.out.println("Shortest route: "+iterationBest.getRouteLength());
+            Solution solution = new Solution(iterationBest.getRouteLength(), iterationBest.getRoute());
+            if (listener != null) listener.iterationEnd(k, numIterations, solution);
 
             if (best == null || iterationBest.getRouteLength() < best.getRouteLength()) {
                 best = iterationBest;
