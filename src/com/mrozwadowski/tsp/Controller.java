@@ -100,6 +100,7 @@ public class Controller implements ProgressListener {
             Solution solution = (Solution)label.getUserData();
             if (solution.getLength() < shortest) {
                 best = label;
+                shortest = solution.getLength();
             }
         }
 
@@ -210,6 +211,7 @@ public class Controller implements ProgressListener {
         antColony = new AntColony(graph);
         antColony.setListener(this);
 
+        System.out.println(alpha.getValue()+", "+beta.getValue()+", "+phero0.getValue()+", "+evap.getValue()+", "+q.getValue()+", "+ants.getValue()+", "+iterations.getValue());
         antColony.setParams(alpha.getValue(), beta.getValue(), phero0.getValue(), evap.getValue(), q.getValue(), ants.getValue(), iterations.getValue());
 
         Thread t = new Thread(() -> {
